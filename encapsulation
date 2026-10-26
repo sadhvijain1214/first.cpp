@@ -1,0 +1,30 @@
+
+#include <iostream>
+using namespace std;
+
+class Student {
+private:
+    int marks;  // Private data member
+
+public:
+    void setMarks(int m) {
+        if (m >= 0 && m <= 100) {
+            marks = m;
+        } else {
+            cout << "Invalid marks!" << endl;
+        }
+    }
+
+    void getMarks() {
+        cout << "Marks: " << marks << endl;
+    }
+};
+
+int main() {
+    Student s;
+
+    s.setMarks(90);
+    s.getMarks();
+
+    return 0;
+}

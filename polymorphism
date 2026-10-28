@@ -1,0 +1,24 @@
+
+#include <iostream>
+using namespace std;
+
+class Student {
+public:
+    void display(string name) {
+        cout << "Name: " << name << endl;
+    }
+
+    void display(string name, int marks) {
+        cout << "Name: " << name << endl;
+        cout << "Marks: " << marks << endl;
+    }
+};
+
+int main() {
+    Student s;
+
+    s.display("Sadhvi");
+    s.display("Rahul", 90);
+
+    return 0;
+}

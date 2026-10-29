@@ -1,0 +1,225 @@
+
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <sstream>
+#include <limits>
+using namespace std;
+
+struct Book {
+    int id;
+    string title;
+    string author;
+    bool available;
+};
+
+vector<Book> books;
+
+// Read an integer safely
+int readInt(string message) {
+    int value;
+    while (true) {
+        cout << message;
+        if (cin >> value) {
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            return value;
+        }
+        cout << "Invalid input! Enter a number.\n";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+}
+
+// Load books from file
+void loadBooks() {
+    ifstream file("books.txt");
+    string line;
+
+    while (getline(file, line)) {
+        stringstream ss(line);
+        string id, title, author, status;
+
+        if (getline(ss, id, '|') &&
+            getline(ss, title, '|') &&
+            getline(ss, author, '|') &&
+            getline(ss, status)) {
+            try {
+                books.push_back({
+                    stoi(id), title, author, status == "1"
+                });
+            } catch (...) {
+                // Skip invalid records
+            }
+        }
+    }
+    file.close();
+}
+
+// Save books to file
+void saveBooks() {
+    ofstream file("books.txt");
+
+    for (const Book &b : books) {
+        file << b.id << "|" << b.title << "|"
+             << b.author << "|" << (b.available ? 1 : 0)
+             << "\n";
+    }
+
+    file.close();
+}
+
+// Add a new book
+void addBook() {
+    Book b;
+
+    b.id = readInt("Enter Book ID: ");
+
+    for (const Book &book : books) {
+        if (book.id == b.id) {
+            cout << "Book ID already exists!\n";
+            return;
+        }
+    }
+
+    cout << "Enter Book Title: ";
+    getline(cin, b.title);
+
+    cout << "Enter Author Name: ";
+    getline(cin, b.author);
+
+    // Avoid breaking the file format
+    if (b.title.find('|') != string::npos ||
+        b.author.find('|') != string::npos ||
+        b.title.empty() || b.author.empty()) {
+        cout << "Invalid or empty title/author.\n";
+        return;
+    }
+
+    b.available = true;
+    books.push_back(b);
+    saveBooks();
+
+    cout << "Book added successfully!\n";
+}
+
+// Display all books
+void displayBooks() {
+    if (books.empty()) {
+        cout << "No books found.\n";
+        return;
+    }
+
+    cout << "\n--- Library Books ---\n";
+
+    for (const Book &b : books) {
+        cout << "ID: " << b.id
+             << "\nTitle: " << b.title
+             << "\nAuthor: " << b.author
+             << "\nStatus: "
+             << (b.available ? "Available" : "Issued")
+             << "\n---------------------\n";
+    }
+}
+
+// Search for a book
+void searchBook() {
+    int id = readInt("Enter Book ID to search: ");
+
+    for (const Book &b : books) {
+        if (b.id == id) {
+            cout << "Book Found!\n";
+            cout << "Title: " << b.title
+                 << "\nAuthor: " << b.author
+                 << "\nStatus: "
+                 << (b.available ? "Available" : "Issued")
+                 << "\n";
+            return;
+        }
+    }
+
+    cout << "Book not found!\n";
+}
+
+// Issue a book
+void issueBook() {
+    int id = readInt("Enter Book ID to issue: ");
+
+    for (Book &b : books) {
+        if (b.id == id) {
+            if (b.available) {
+                b.available = false;
+                saveBooks();
+                cout << "Book issued successfully!\n";
+            } else {
+                cout << "Book is already issued!\n";
+            }
+            return;
+        }
+    }
+
+    cout << "Book not found!\n";
+}
+
+// Return a book
+void returnBook() {
+    int id = readInt("Enter Book ID to return: ");
+
+    for (Book &b : books) {
+        if (b.id == id) {
+            if (!b.available) {
+                b.available = true;
+                saveBooks();
+                cout << "Book returned successfully!\n";
+            } else {
+                cout << "This book was not issued.\n";
+            }
+            return;
+        }
+    }
+
+    cout << "Book not found!\n";
+}
+
+int main() {
+    loadBooks();
+
+    int choice;
+
+    do {
+        cout << "\n===== LIBRARY MANAGEMENT SYSTEM =====\n";
+        cout << "1. Add Book\n";
+        cout << "2. Display All Books\n";
+        cout << "3. Search Book\n";
+        cout << "4. Issue Book\n";
+        cout << "5. Return Book\n";
+        cout << "6. Exit\n";
+
+        choice = readInt("Enter your choice: ");
+
+        switch (choice) {
+            case 1:
+                addBook();
+                break;
+            case 2:
+                displayBooks();
+                break;
+            case 3:
+                searchBook();
+                break;
+            case 4:
+                issueBook();
+                break;
+            case 5:
+                returnBook();
+                break;
+            case 6:
+                cout << "Thank you for using the library system!\n";
+                break;
+            default:
+                cout << "Invalid choice! Try again.\n";
+        }
+
+    } while (choice != 6);
+
+    return 0;
+}

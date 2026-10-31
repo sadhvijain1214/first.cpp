@@ -1,0 +1,22 @@
+#include <iostream>
+using namespace std;
+
+int main() {
+    try {
+        throw 10;
+    }
+
+    catch (int x) {
+        cout << "Integer exception: " << x;
+    }
+
+    catch (double x) {
+        cout << "Double exception: " << x;
+    }
+
+    catch (...) {
+        cout << "Unknown exception";
+    }
+
+    return 0;
+}

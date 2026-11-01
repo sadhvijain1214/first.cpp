@@ -1,0 +1,38 @@
+
+#include <iostream>
+using namespace std;
+
+// First Parent Class
+class A {
+public:
+    void displayA() {
+        cout << "This is Class A" << endl;
+    }
+};
+
+// Second Class inherits Class A
+class B : public A {
+public:
+    void displayB() {
+        cout << "This is Class B" << endl;
+    }
+};
+
+// Third Class inherits Class B
+class C : public B {
+public:
+    void displayC() {
+        cout << "This is Class C" << endl;
+    }
+};
+
+int main() {
+
+    C obj;
+
+    obj.displayA();
+    obj.displayB();
+    obj.displayC();
+
+    return 0;
+}
